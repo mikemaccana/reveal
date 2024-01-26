@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { Revealer } from "../target/types/revealer";
+import { makeKeypairs } from "@solana-developers/helpers";
 const log = console.log;
 
 describe("revealer", () => {
@@ -13,7 +14,8 @@ describe("revealer", () => {
   const instructionHandlers = program.methods;
 
   test("reveal works", async () => {
-    // Add your test here.
+    const [sender, recipient] = makeKeypairs(2);
+
     const transactionSignature = await instructionHandlers.reveal().rpc();
     log("Your transaction signature:", transactionSignature);
     assert(transactionSignature);
