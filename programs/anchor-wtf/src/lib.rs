@@ -12,7 +12,7 @@ pub use state::*;
 declare_id!("FhpcYtvyN8PZFZxjGJ1GuaDg7dLLajsP8jHoseQwZdeY");
 
 #[program]
-pub mod anchor_wtf {
+pub mod revealer {
     use super::*;
 
     pub fn reveal(ctx: Context<RevealAccountConstraints>) -> Result<()> {

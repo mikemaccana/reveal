@@ -5,7 +5,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-anchor_wtf = "FhpcYtvyN8PZFZxjGJ1GuaDg7dLLajsP8jHoseQwZdeY"
+revealer = "FhpcYtvyN8PZFZxjGJ1GuaDg7dLLajsP8jHoseQwZdeY"
 
 [registry]
 url = "https://api.apr.dev"
@@ -15,4 +15,4 @@ cluster = "Localnet"
 wallet = "/Users/mikemaccana/.config/solana/id.json"
 
 [scripts]
-test = "npx esrun tests/anchor-wtf.test.ts"
+test = "npx esrun tests/revealer.test.ts"

@@ -1,12 +1,12 @@
 [package]
-name = "anchor-wtf"
+name = "revealer"
 version = "0.1.0"
 description = "Created with Anchor"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "anchor_wtf"
+name = "revealer"
 
 [features]
 no-entrypoint = []

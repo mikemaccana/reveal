@@ -2,14 +2,14 @@ import { before, describe, test } from "node:test";
 import assert from "node:assert/strict";
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { AnchorWtf } from "../target/types/anchor_wtf";
+import { Revealer } from "../target/types/revealer";
 const log = console.log;
 
-describe("anchor-wtf", () => {
+describe("revealer", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
-  const program = anchor.workspace.AnchorWtf as Program<AnchorWtf>;
+  const program = anchor.workspace.Revealer as Program<Revealer>;
   const instructionHandlers = program.methods;
 
   test("reveal works", async () => {
