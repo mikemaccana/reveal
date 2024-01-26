@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
-pub struct Initialize {}
+pub struct RevealAccountConstraints {}
 
-pub fn handler(ctx: Context<Initialize>) -> Result<()> {
+pub fn handler(_context: Context<RevealAccountConstraints>) -> Result<()> {
     Ok(())
 }

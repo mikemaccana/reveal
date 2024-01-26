@@ -15,7 +15,7 @@ declare_id!("FhpcYtvyN8PZFZxjGJ1GuaDg7dLLajsP8jHoseQwZdeY");
 pub mod anchor_wtf {
     use super::*;
 
-    pub fn reveal(ctx: Context<Initialize>) -> Result<()> {
+    pub fn reveal(ctx: Context<RevealAccountConstraints>) -> Result<()> {
         reveal::handler(ctx)
     }
 }
