@@ -20,6 +20,7 @@ describe("revealer", () => {
   test("reveal works", async () => {
     const [sender, recipient] = makeKeypairs(2);
     const id = new BN(1);
+    log(`is is`, id.toString());
     const transactionSignature = await instructionHandlers.reveal(id).rpc();
     log("Your transaction signature:", transactionSignature);
     assert(transactionSignature);
