@@ -8,9 +8,9 @@ describe("anchor-wtf", () => {
 
   const program = anchor.workspace.AnchorWtf as Program<AnchorWtf>;
 
-  it("Is initialized!", async () => {
+  it("Is reveald!", async () => {
     // Add your test here.
-    const tx = await program.methods.initialize().rpc();
+    const tx = await program.methods.reveal().rpc();
     console.log("Your transaction signature", tx);
   });
 });
