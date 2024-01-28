@@ -2,11 +2,15 @@
 members = [
     "programs/*"
 ]
+# Fix warning about libc
+# See https://github.com/coral-xyz/anchor/pull/2676
+resolver = "2"
 
 [profile.release]
 overflow-checks = true
 lto = "fat"
 codegen-units = 1
+
 [profile.release.build-override]
 opt-level = 3
 incremental = false
