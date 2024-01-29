@@ -41,9 +41,12 @@ describe("revealer", async () => {
   test("reveal works", async () => {
     const id: typeof BN = new BN(1);
     // convert baddata to an array of numbers
+    const data = Array(950).fill(1);
 
     log(`ID is:`, id.toString());
-    const transactionSignature = await instructionHandlers.reveal(id).rpc();
+    const transactionSignature = await instructionHandlers
+      .reveal(id, data)
+      .rpc();
     log("Your transaction signature:", transactionSignature);
     assert(transactionSignature);
   });
