@@ -1,6 +1,10 @@
 import { before, describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { LAMPORTS_PER_SOL as SOL } from "@solana/web3.js";
+import {
+  LAMPORTS_PER_SOL as SOL,
+  Transaction,
+  ComputeBudgetProgram,
+} from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 
 import { Revealer } from "../target/types/revealer";
@@ -68,13 +72,13 @@ describe("revealer", async () => {
   anchor.setProvider(provider);
 
   // https://solana.stackexchange.com/questions/3072/typeerror-anchor-bn-is-not-a-constructor-from-script
-  // @ts-ignore
+  // @ts-ignore - the 'default' property is actually there, the type checker is wrong
   const { BN } = anchor.default;
 
   const program = anchor.workspace.Revealer as anchor.Program<Revealer>;
-  const instructionHandlers = program.methods;
 
   test("reveal works", async () => {
+    // TODO: make random
     const id: typeof BN = new BN(1);
 
     const data = { greeting: "hello world" };
@@ -82,9 +86,28 @@ describe("revealer", async () => {
     const encodedData = objectToArrayOfNumbers(data);
 
     log(`ID is:`, id.toString());
-    const transactionSignature = await instructionHandlers
+
+    let tx = new Transaction();
+
+    // Add a compute unit limit
+    const setComputeUnitLimitInstruction =
+      ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 });
+    tx.add(setComputeUnitLimitInstruction);
+
+    // Add the instruction from my Anchor program
+    const revealInstruction = await program.methods
       .reveal(id, encodedData)
-      .rpc();
+      .instruction();
+    tx.add(revealInstruction);
+
+    const transactionSignature = await connection.sendTransaction(
+      tx,
+      [sender],
+      {
+        skipPreflight: true,
+      }
+    );
+
     log("Your transaction signature:", transactionSignature);
     assert(transactionSignature);
   });

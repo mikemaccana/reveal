@@ -18,8 +18,8 @@ pub mod revealer {
     pub fn reveal(
         context: Context<RevealAccountConstraints>,
         id: u64,
-        _data: [u8; DATA_SIZE],
+        data: [u8; DATA_SIZE],
     ) -> Result<()> {
-        reveal::handler(context, id)
+        reveal::handler(context, id, data)
     }
 }
