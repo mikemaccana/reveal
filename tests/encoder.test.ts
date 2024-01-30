@@ -2,14 +2,16 @@ import { before, describe, test } from "node:test";
 const log = console.log;
 import assert from "node:assert/strict";
 
+// Also known as 32
+const WHITESPACE_NUMBER = Buffer.from(" ", "utf-8")[0];
+
 // Must match DATA_SIZE in the on chain program
 // Anything more than this will fail with ERR_OUT_OF_RANGE
-// const DATA_SIZE = 992;
-const DATA_SIZE = 50;
+const DATA_SIZE = 992;
 
+// Encodes JS objects as JSON with whitespace padding inside an array of numbers
 const objectToArrayOfNumbers = (object: any): Array<number> => {
-  const whitespaceNumber = new Uint8Array(Buffer.from(" ", "utf-8"))[0];
-  const paddedArray = new Array(DATA_SIZE).fill(whitespaceNumber);
+  const paddedArray = new Array(DATA_SIZE).fill(WHITESPACE_NUMBER);
   const string = JSON.stringify(object);
   const contentsArray = Array.from(
     new Uint8Array(Buffer.from(string, "utf-8"))
