@@ -21,7 +21,7 @@ describe("encoding JS objects to arrays of numbers", () => {
     const arrayOfNumbers = objectToArrayOfNumbers(input);
     assert(arrayOfNumbers.length === DATA_SIZE);
     const result = arrayOfNumbersToObject(arrayOfNumbers);
-    assert.deepEqual(result, input);
+    assert.deepStrictEqual(result, input);
   });
 
   test("object to array of numbers", () => {
@@ -29,7 +29,7 @@ describe("encoding JS objects to arrays of numbers", () => {
     const arrayOfNumbers = objectToArrayOfNumbers(input);
     assert(arrayOfNumbers.length === DATA_SIZE);
     const result = arrayOfNumbersToObject(arrayOfNumbers);
-    assert.deepEqual(result, input);
+    assert.deepStrictEqual(result, input);
   });
 
   test.only("overly large object to array of numbers thrown an error", () => {
