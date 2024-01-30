@@ -4,6 +4,7 @@ import {
   LAMPORTS_PER_SOL as SOL,
   Transaction,
   ComputeBudgetProgram,
+  Connection,
 } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 
@@ -57,19 +58,9 @@ describe("revealer", async () => {
   // Configure the client to use the local cluster.
   const [sender, recipient] = makeKeypairs(2);
 
-  const connection = new anchor.web3.Connection("http://localhost:8899");
+  const connection = new Connection("http://localhost:8899");
 
   await requestAndConfirmAirdrop(connection, sender.publicKey, 1 * SOL);
-
-  // Connect to Anchor as sender
-  const provider = new anchor.AnchorProvider(
-    connection,
-    new anchor.Wallet(sender),
-    anchor.AnchorProvider.defaultOptions()
-  );
-
-  // Set the provider
-  anchor.setProvider(provider);
 
   // https://solana.stackexchange.com/questions/3072/typeerror-anchor-bn-is-not-a-constructor-from-script
   // @ts-ignore - the 'default' property is actually there, the type checker is wrong
@@ -100,6 +91,7 @@ describe("revealer", async () => {
       .instruction();
     tx.add(revealInstruction);
 
+    // TODO: use versioned transactions
     const transactionSignature = await connection.sendTransaction(
       tx,
       [sender],
