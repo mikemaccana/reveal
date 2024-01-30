@@ -8,7 +8,46 @@ import {
   makeKeypairs,
   requestAndConfirmAirdrop,
 } from "@solana-developers/helpers";
+import {
+  DATA_SIZE,
+  arrayOfNumbersToObject,
+  objectToArrayOfNumbers,
+} from "./encoder";
 const log = console.log;
+
+describe("encoding JS objects to arrays of numbers", () => {
+  test("string to array of numbers", () => {
+    const input = "hello world";
+    const arrayOfNumbers = objectToArrayOfNumbers(input);
+    assert(arrayOfNumbers.length === DATA_SIZE);
+    const result = arrayOfNumbersToObject(arrayOfNumbers);
+    assert.deepEqual(result, input);
+  });
+
+  test("object to array of numbers", () => {
+    const input = { greeting: "hello world" };
+    const arrayOfNumbers = objectToArrayOfNumbers(input);
+    assert(arrayOfNumbers.length === DATA_SIZE);
+    const result = arrayOfNumbersToObject(arrayOfNumbers);
+    assert.deepEqual(result, input);
+  });
+
+  test.only("overly large object to array of numbers thrown an error", () => {
+    let didThrow = false;
+    const largeString =
+      `"Skateboarding is the ultimate expression of freedom and creativity. It's a way of life that's all about pushing boundaries, breaking rules, and living on the edge. With every trick, every grind, every flip, we're defying gravity and redefining what's possible. Skateboarding is more than just a sport, it's a culture, a community, and a way of seeing the world. It's about taking risks, challenging yourself, and never giving up. So grab your board, hit the streets, and let's show the world what we're made of! #skatelife #90s #radical #cool #skateboardingislife`.repeat(
+        30
+      );
+    try {
+      objectToArrayOfNumbers(largeString);
+    } catch (thrownObject) {
+      const error = thrownObject as Error;
+      assert(error.message.includes("data too large"));
+      didThrow = true;
+    }
+    assert(didThrow);
+  });
+});
 
 describe("revealer", async () => {
   // Configure the client to use the local cluster.
@@ -38,11 +77,13 @@ describe("revealer", async () => {
   test("reveal works", async () => {
     const id: typeof BN = new BN(1);
 
-    assert(data.length <= DATA_SIZE, `Data is too large`);
+    const data = { greeting: "hello world" };
+
+    const encodedData = objectToArrayOfNumbers(data);
 
     log(`ID is:`, id.toString());
     const transactionSignature = await instructionHandlers
-      .reveal(id, data)
+      .reveal(id, encodedData)
       .rpc();
     log("Your transaction signature:", transactionSignature);
     assert(transactionSignature);
