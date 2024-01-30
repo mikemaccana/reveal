@@ -1,5 +1,6 @@
 import { before, describe, test } from "node:test";
 import assert from "node:assert/strict";
+import { LAMPORTS_PER_SOL as SOL } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 
 import { Revealer } from "../target/types/revealer";
@@ -19,7 +20,7 @@ describe("revealer", async () => {
 
   const connection = new anchor.web3.Connection("http://localhost:8899");
 
-  await requestAndConfirmAirdrop(connection, sender.publicKey, 1_000_000_000);
+  await requestAndConfirmAirdrop(connection, sender.publicKey, 1 * SOL);
 
   // Connect to Anchor as sender
   const provider = new anchor.AnchorProvider(
@@ -38,10 +39,18 @@ describe("revealer", async () => {
   const program = anchor.workspace.Revealer as anchor.Program<Revealer>;
   const instructionHandlers = program.methods;
 
+  // Must match MAX_DATA_SIZE in the on chain program
+  // Anything more than this will fail with ERR_OUT_OF_RANGE
+  const MAX_DATA_SIZE = 992;
+
   test("reveal works", async () => {
     const id: typeof BN = new BN(1);
     // convert baddata to an array of numbers
-    const data = Array(950).fill(1);
+
+    const data = Array(MAX_DATA_SIZE).fill(1);
+    // const data = stringToArrayOfNumbers("hello world"))
+
+    assert(data.length <= MAX_DATA_SIZE, `Data is too large`);
 
     log(`ID is:`, id.toString());
     const transactionSignature = await instructionHandlers
