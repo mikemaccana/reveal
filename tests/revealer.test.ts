@@ -21,30 +21,6 @@ import {
 } from "./encoder";
 const log = console.log;
 
-const getProgramAddressAndBump = (
-  // @ts-ignore this type exists
-  inputs: Array<string | PublicKey | BN>,
-  programId: PublicKey
-) => {
-  const buffers = inputs.map((input) => {
-    if (typeof input === "string") {
-      return Buffer.from(input);
-    }
-    if (input instanceof PublicKey) {
-      return input.toBuffer();
-    }
-    // @ts-ignore this type exists
-    if (input instanceof BN) {
-      return input.toBuffer();
-    }
-  });
-  const programAddressAndBump = PublicKey.findProgramAddressSync(
-    buffers,
-    programId
-  );
-  return programAddressAndBump;
-};
-
 describe("encoding JS objects to arrays of numbers", () => {
   test("string to array of numbers", () => {
     const input = "hello world";
@@ -111,15 +87,7 @@ describe("revealer", async () => {
     // even if we haven't made them yet,
     // since the blockchain needs to check if they overlap with other transactions etc.
     // Needs to match instructions/reveal.ts
-    //
-    // TODO: make a generic function to take strings, publickeys, and BNs and turn them into buffers
-    // const programAddressAndBump = getProgramAddressAndBump(
-    //   ["revelation", sender.publicKey, id],
-    //   program.programId
-    // );
-    // const revelation = programAddressAndBump[0];
-
-    const revelation = PublicKey.findProgramAddressSync(
+    const revelationAddress = PublicKey.findProgramAddressSync(
       [
         Buffer.from("revelation"),
         sender.publicKey.toBuffer(),
@@ -133,7 +101,7 @@ describe("revealer", async () => {
       .reveal(id, encodedData)
       .accounts({
         sender: sender.publicKey,
-        revelation,
+        revelation: revelationAddress,
       })
       .instruction();
     transaction.add(revealInstruction);
@@ -149,5 +117,9 @@ describe("revealer", async () => {
 
     log("Your transaction signature:", transactionSignature);
     assert(transactionSignature);
+
+    // Now get the data back
+    const accountInfo = await connection.getAccountInfo(revelationAddress);
+    log(stringify(accountInfo));
   });
 });
