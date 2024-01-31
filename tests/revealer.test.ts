@@ -8,7 +8,7 @@ import {
   PublicKey,
 } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
-
+import { randomBytes } from "crypto";
 import { Revealer } from "../target/types/revealer";
 import {
   makeKeypairs,
@@ -94,8 +94,7 @@ describe("revealer", async () => {
   const program = anchor.workspace.Revealer as anchor.Program<Revealer>;
 
   test("reveal works", async () => {
-    // TODO: make random
-    const id: typeof BN = new BN(1);
+    const id: typeof BN = new BN(randomBytes(8));
 
     const data = { greeting: "hello world" };
 
