@@ -7,7 +7,7 @@ const WHITESPACE_NUMBER = Buffer.from(" ", "utf-8")[0];
 
 // Must match DATA_SIZE in the on chain program
 // Anything more than this will fail with ERR_OUT_OF_RANGE
-export const DATA_SIZE = 992;
+export const DATA_SIZE = 925;
 
 // Encodes JS objects as JSON with whitespace padding, as an array of numbers
 export const objectToArrayOfNumbers = (object: any): Array<number> => {
