@@ -77,13 +77,19 @@ describe("revealer", async () => {
 
     const encodedData = objectToArrayOfNumbers(data);
 
-    let tx = new Transaction();
+    let transaction = new Transaction();
 
     // Add a compute unit limit
     const setComputeUnitLimitInstruction =
       ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 });
-    tx.add(setComputeUnitLimitInstruction);
+    transaction.add(setComputeUnitLimitInstruction);
 
+    // We need to include ALL accounts
+    // even if we haven't made them yet,
+    // since the blockchain needs to check if they overlap with other transactions etc.
+    // Needs to match instructions/reveal.ts
+    //
+    // TODO: make a generic function to take strings, publickeys, and BNs and turn them into buffers
     const revelation = PublicKey.findProgramAddressSync(
       [
         Buffer.from("revelation"),
@@ -97,14 +103,15 @@ describe("revealer", async () => {
     const revealInstruction = await program.methods
       .reveal(id, encodedData)
       .accounts({
+        sender: sender.publicKey,
         revelation,
       })
       .instruction();
-    tx.add(revealInstruction);
+    transaction.add(revealInstruction);
 
     // TODO: use versioned transactions
     const transactionSignature = await connection.sendTransaction(
-      tx,
+      transaction,
       [sender],
       {
         skipPreflight: true,
