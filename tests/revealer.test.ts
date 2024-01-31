@@ -5,6 +5,7 @@ import {
   Transaction,
   ComputeBudgetProgram,
   Connection,
+  PublicKey,
 } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 
@@ -83,9 +84,21 @@ describe("revealer", async () => {
       ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 });
     tx.add(setComputeUnitLimitInstruction);
 
+    const revelation = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("revelation"),
+        sender.publicKey.toBuffer(),
+        id.toBuffer("le", 8),
+      ],
+      program.programId
+    )[0];
+
     // Add the instruction from my Anchor program
     const revealInstruction = await program.methods
       .reveal(id, encodedData)
+      .accounts({
+        revelation,
+      })
       .instruction();
     tx.add(revealInstruction);
 
