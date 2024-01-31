@@ -15,11 +15,7 @@ declare_id!("Vo95BRgRsTyyrxWvy35GbGQxfMZxZrDXcuj93Dy4vdb");
 pub mod revealer {
     use super::*;
 
-    pub fn reveal(
-        context: Context<RevealAccountConstraints>,
-        id: u64,
-        data: [u8; DATA_SIZE],
-    ) -> Result<()> {
+    pub fn reveal(context: Context<RevealAccounts>, id: u64, data: [u8; DATA_SIZE]) -> Result<()> {
         reveal::handler(context, id, data)
     }
 }

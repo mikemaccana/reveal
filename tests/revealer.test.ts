@@ -76,8 +76,6 @@ describe("revealer", async () => {
 
     const encodedData = objectToArrayOfNumbers(data);
 
-    log(`ID is:`, id.toString());
-
     let tx = new Transaction();
 
     // Add a compute unit limit
