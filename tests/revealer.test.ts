@@ -80,7 +80,8 @@ describe("revealer", async () => {
 
     let transaction = new Transaction();
 
-    // Add a compute unit limit
+    // Add a large compute unit limit
+    // Fixes 'exceeded CUs meter at BPF instruction'
     const setComputeUnitLimitInstruction =
       ComputeBudgetProgram.setComputeUnitLimit({ units: 250_000 });
     transaction.add(setComputeUnitLimitInstruction);
