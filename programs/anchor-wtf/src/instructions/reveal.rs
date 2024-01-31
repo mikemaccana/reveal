@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{Revelation, DATA_SIZE};
+use crate::{Revelation, ANCHOR_DISCRIMINATOR_SIZE, DATA_SIZE};
 
 #[derive(Accounts)]
 #[instruction(id: u64)]
@@ -11,7 +11,7 @@ pub struct RevealAccounts<'info> {
     #[account(
         init,
         payer = sender,
-        space = 1000,
+        space = ANCHOR_DISCRIMINATOR_SIZE + Revelation::INIT_SPACE,
         seeds=[b"revelation", sender.key().as_ref(), id.to_le_bytes().as_ref()],
         bump
     )]
