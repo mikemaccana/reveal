@@ -1,10 +1,3 @@
-use anchor_lang::prelude::*;
+pub mod revelation;
 
-use crate::DATA_SIZE;
-
-#[account]
-#[derive(InitSpace)]
-pub struct Revelation {
-    pub id: u64,
-    pub data: [u8; DATA_SIZE],
-}
+pub use revelation::*;
