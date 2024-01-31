@@ -11,6 +11,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { randomBytes } from "crypto";
 import { Revealer } from "../target/types/revealer";
 import {
+  confirmTransaction,
   makeKeypairs,
   requestAndConfirmAirdrop,
 } from "@solana-developers/helpers";
@@ -20,6 +21,7 @@ import {
   objectToArrayOfNumbers,
 } from "./encoder";
 const log = console.log;
+const stringify = (object) => JSON.stringify(object, null, 2);
 
 describe("encoding JS objects to arrays of numbers", () => {
   test("string to array of numbers", () => {
@@ -74,13 +76,13 @@ describe("revealer", async () => {
 
     const data = { greeting: "hello world" };
 
-    const encodedData = objectToArrayOfNumbers(data);
+    const dataToPutOnChain = objectToArrayOfNumbers(data);
 
     let transaction = new Transaction();
 
     // Add a compute unit limit
     const setComputeUnitLimitInstruction =
-      ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 });
+      ComputeBudgetProgram.setComputeUnitLimit({ units: 250_000 });
     transaction.add(setComputeUnitLimitInstruction);
 
     // We need to include ALL accounts
@@ -98,7 +100,7 @@ describe("revealer", async () => {
 
     // Add the instruction from my Anchor program
     const revealInstruction = await program.methods
-      .reveal(id, encodedData)
+      .reveal(id, dataToPutOnChain)
       .accounts({
         sender: sender.publicKey,
         revelation: revelationAddress,
@@ -118,8 +120,22 @@ describe("revealer", async () => {
     log("Your transaction signature:", transactionSignature);
     assert(transactionSignature);
 
+    await confirmTransaction(connection, transactionSignature);
+
     // Now get the data back
-    const accountInfo = await connection.getAccountInfo(revelationAddress);
-    log(stringify(accountInfo));
+    const revelationAccount = await connection.getAccountInfo(
+      revelationAddress
+    );
+
+    const dataFromChain = revelationAccount?.data;
+    if (!dataFromChain) {
+      throw new Error(`No account data at ${revelationAddress}`);
+    }
+
+    const account = await program.account.revelation.fetch(revelationAddress);
+
+    const dataObjectFromChain = arrayOfNumbersToObject(account.data);
+
+    assert.deepEqual(dataObjectFromChain, data);
   });
 });
