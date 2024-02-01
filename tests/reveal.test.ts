@@ -167,6 +167,8 @@ describe("revealer", async () => {
       revelationAddress
     );
 
+    log(`revelationAddress: ${stringify(revelationAddress)}`);
+
     const dataFromChain = revelationAccount?.data;
     if (!dataFromChain) {
       throw new Error(`No account data at ${revelationAddress}`);

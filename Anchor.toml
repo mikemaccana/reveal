@@ -15,4 +15,4 @@ cluster = "Localnet"
 wallet = "/Users/mikemaccana/.config/solana/id.json"
 
 [scripts]
-test = "npx esrun --node-no-warnings tests/revealer.test.ts"
+test = "npx esrun --node-no-warnings tests/reveal.test.ts"
