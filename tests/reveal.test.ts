@@ -89,7 +89,6 @@ describe("getPDA", async () => {
 });
 
 describe("revealer", async () => {
-  // Configure the client to use the local cluster.
   const [sender, recipient] = makeKeypairs(2);
 
   const connection = new Connection("http://localhost:8899");
