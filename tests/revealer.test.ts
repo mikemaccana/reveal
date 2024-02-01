@@ -11,11 +11,13 @@ import {
 import * as anchor from "@coral-xyz/anchor";
 import { randomBytes } from "crypto";
 import { Revealer } from "../target/types/revealer";
+// TODO: using a slightly newer version of helpers
+// While waiting for PRs  for some of these to be reviewed
 import {
   confirmTransaction,
   makeKeypairs,
   requestAndConfirmAirdrop,
-} from "@solana-developers/helpers";
+} from "./helpers";
 import {
   DATA_SIZE,
   arrayOfNumbersToObject,
@@ -96,10 +98,24 @@ describe("revealer", async () => {
 
   const program = anchor.workspace.Revealer as anchor.Program<Revealer>;
 
-  test("reveal works", async () => {
+  test("reveal works (not encrypting on-chain data yet)", async () => {
     const id: typeof BN = new BN(randomBytes(8));
 
-    const data = { greeting: "hello world" };
+    // Very basic implementation of Part 1
+    // of https://www.irs.gov/pub/irs-pdf/f8300.pdf
+    const data = {
+      firstName: "Jane",
+      lastName: "Smith",
+      addressLine1: "123 Main St",
+      city: "Anytown",
+      state: "NY",
+      zip: "12345",
+      dob: "20000101",
+      occupation: "student",
+      identifyingDocument: "passport",
+      identifyingDocumentNumber: "123456789",
+      identifyingDocumentIssuingCountry: "USA",
+    };
 
     const dataToPutOnChain = objectToArrayOfNumbers(data);
 
@@ -139,7 +155,6 @@ describe("revealer", async () => {
       }
     );
 
-    log("Your transaction signature:", transactionSignature);
     assert(transactionSignature);
 
     await confirmTransaction(connection, transactionSignature);
