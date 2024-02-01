@@ -105,7 +105,9 @@ describe("revealer", async () => {
     // of https://www.irs.gov/pub/irs-pdf/f8300.pdf
     const data = {
       firstName: "Jane",
+      middleInitial: "Q",
       lastName: "Smith",
+      taxPayerId: "123456789",
       addressLine1: "123 Main St",
       city: "Anytown",
       state: "NY",
