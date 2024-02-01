@@ -37,10 +37,13 @@ async function encryptString(publicKey, stringToEncrypt) {
   };
 }
 
-// Example usage
+// Convert our keypairs to native webcryoto keypairs
 const senderWC = await fromLegacyKeypair(sender);
 const recipientWC = await fromLegacyKeypair(recipient);
 
+// TODO: sadly I got a little struck in the webcrypto weeds here
+// after handling NaCl drama, and didn't manage to complete the
+// client-side encryption,
 const { encryptedData, nonce, ephemeralPublicKey } = await encryptString(
   recipientWC.publicKey,
   "Hello, world!"

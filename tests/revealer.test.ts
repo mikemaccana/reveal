@@ -176,6 +176,7 @@ describe("revealer", async () => {
 
     const dataObjectFromChain = arrayOfNumbersToObject(account.data);
 
+    // And make sure it matches!
     assert.deepEqual(dataObjectFromChain, data);
   });
 });
