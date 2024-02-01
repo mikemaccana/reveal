@@ -1,28 +1,51 @@
-// nacl is broken for es6
-// we should stop using nackl and use web3.js anyway
-// https://github.com/hakanols/tweetnacl-es6
-import nacl from "./thirdparty/nacl-fast-es";
-
-const log = console.log;
-
+import { fromLegacyKeypair } from "@solana/compat";
 import { makeKeypairs } from "@solana-developers/helpers";
+import { Keypair } from "@solana/web3.js";
+const log = console.log;
 
 const [sender, recipient] = makeKeypairs(2);
 
-const senderNACL = nacl.box.keyPair.fromSecretKey(sender.secretKey);
-const recipientNACL = nacl.box.keyPair.fromSecretKey(recipient.secretKey);
+// Can you encrypt a string using the publickey of a ed25519 CryptoKeyPair?
+// by copilot
+async function encryptString(publicKey, stringToEncrypt) {
+  const ephemeralKeypair = Keypair.generate();
+  const ephemeralKeypairWC = await fromLegacyKeypair(ephemeralKeypair);
+  const sharedSecret = await crypto.subtle.deriveBits(
+    {
+      name: "ECDH",
+      namedCurve: "X25519",
+      public: publicKey,
+    },
+    ephemeralKeypairWC.privateKey,
+    256
+  );
+  const nonce = window.crypto.getRandomValues(new Uint8Array(24));
+  const encodedString = new TextEncoder().encode(stringToEncrypt);
+  const encryptedData = await window.crypto.subtle.encrypt(
+    {
+      name: "AES-GCM",
+      iv: nonce,
+      tagLength: 128,
+    },
+    sharedSecret,
+    encodedString
+  );
+  return {
+    encryptedData,
+    nonce,
+    ephemeralPublicKey: ephemeralKeypair.publicKey,
+  };
+}
 
-const nonce = nacl.randomBytes(nacl.box.nonceLength);
+// Example usage
+const senderWC = await fromLegacyKeypair(sender);
+const recipientWC = await fromLegacyKeypair(recipient);
 
-const message = "secret";
-
-const encoder = new TextEncoder();
-
-const encryptedMessage = nacl.box(
-  encoder.encode(message),
-  nonce,
-  recipientNACL.publicKey,
-  senderNACL.secretKey
+const { encryptedData, nonce, ephemeralPublicKey } = await encryptString(
+  recipientWC.publicKey,
+  "Hello, world!"
 );
 
-log("encryptedMessage", encryptedMessage);
+log("Encrypted data:", encryptedData);
+log("Nonce:", nonce);
+log("Ephemeral public key:", ephemeralPublicKey.toBase58());
