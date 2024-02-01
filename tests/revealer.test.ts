@@ -6,6 +6,7 @@ import {
   ComputeBudgetProgram,
   Connection,
   PublicKey,
+  Keypair,
 } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { randomBytes } from "crypto";
@@ -20,8 +21,13 @@ import {
   arrayOfNumbersToObject,
   objectToArrayOfNumbers,
 } from "./encoder";
+import { getPDAAndBump } from "./get-pda.ts";
 const log = console.log;
 const stringify = (object) => JSON.stringify(object, null, 2);
+
+// https://solana.stackexchange.com/questions/3072/typeerror-anchor-bn-is-not-a-constructor-from-script
+// @ts-ignore - the 'default' property is actually there, the type checker is wrong
+const { BN } = anchor.default;
 
 describe("encoding JS objects to arrays of numbers", () => {
   test("string to array of numbers", () => {
@@ -57,6 +63,29 @@ describe("encoding JS objects to arrays of numbers", () => {
   });
 });
 
+describe("getPDA", async () => {
+  test("getPDAAndBump works", async () => {
+    const id: typeof BN = new BN(randomBytes(8));
+    const [userKeypair, programKeypair] = makeKeypairs(2);
+
+    const pdaAndBump = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("somestring"),
+        userKeypair.publicKey.toBuffer(),
+        id.toBuffer("le", 8),
+      ],
+      programKeypair.publicKey
+    );
+
+    const pdaAndBump2 = getPDAAndBump(
+      ["somestring", userKeypair.publicKey, id],
+      programKeypair.publicKey
+    );
+
+    assert.deepEqual(pdaAndBump, pdaAndBump2);
+  });
+});
+
 describe("revealer", async () => {
   // Configure the client to use the local cluster.
   const [sender, recipient] = makeKeypairs(2);
@@ -64,10 +93,6 @@ describe("revealer", async () => {
   const connection = new Connection("http://localhost:8899");
 
   await requestAndConfirmAirdrop(connection, sender.publicKey, 1 * SOL);
-
-  // https://solana.stackexchange.com/questions/3072/typeerror-anchor-bn-is-not-a-constructor-from-script
-  // @ts-ignore - the 'default' property is actually there, the type checker is wrong
-  const { BN } = anchor.default;
 
   const program = anchor.workspace.Revealer as anchor.Program<Revealer>;
 
@@ -90,12 +115,8 @@ describe("revealer", async () => {
     // even if we haven't made them yet,
     // since the blockchain needs to check if they overlap with other transactions etc.
     // Needs to match instructions/reveal.ts
-    const revelationAddress = PublicKey.findProgramAddressSync(
-      [
-        Buffer.from("revelation"),
-        sender.publicKey.toBuffer(),
-        id.toBuffer("le", 8),
-      ],
+    const revelationAddress = getPDAAndBump(
+      ["revelation", sender.publicKey, id],
       program.programId
     )[0];
 
