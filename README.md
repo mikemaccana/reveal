@@ -21,3 +21,9 @@ Just run:
 ```
 anchor test
 ```
+
+## Limits
+
+While the on-chain portion works, the client-side encryption still needs some tweaking.
+TweetNaCL isn't very well maintained, so I decided to use webcrypto, and did convert web3 js keys to webcrypto,
+but still have yet to implement webcrypto Ed25519 encryption.

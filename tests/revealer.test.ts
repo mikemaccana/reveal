@@ -98,14 +98,17 @@ describe("revealer", async () => {
 
   const program = anchor.workspace.Revealer as anchor.Program<Revealer>;
 
-  test("reveal works (not encrypting on-chain data yet)", async () => {
+  test("reveal instructions writes data that can be retrieved", async () => {
     const id: typeof BN = new BN(randomBytes(8));
 
     // Very basic implementation of Part 1
     // of https://www.irs.gov/pub/irs-pdf/f8300.pdf
+    // TODO: not encrypting on-chain data yet, see README
     const data = {
       firstName: "Jane",
+      middleInitial: "Q",
       lastName: "Smith",
+      taxPayerId: "123456789",
       addressLine1: "123 Main St",
       city: "Anytown",
       state: "NY",
