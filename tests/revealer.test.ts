@@ -31,8 +31,8 @@ const stringify = (object) => JSON.stringify(object, null, 2);
 // @ts-ignore - the 'default' property is actually there, the type checker is wrong
 const { BN } = anchor.default;
 
-describe("encoding JS objects to arrays of numbers", () => {
-  test("string to array of numbers", () => {
+describe("encoding JS objects to byte arrays", () => {
+  test("string to byte array", () => {
     const input = "hello world";
     const arrayOfNumbers = objectToArrayOfNumbers(input);
     assert(arrayOfNumbers.length === DATA_SIZE);
@@ -40,7 +40,7 @@ describe("encoding JS objects to arrays of numbers", () => {
     assert.deepStrictEqual(result, input);
   });
 
-  test("object to array of numbers", () => {
+  test("object to byte array", () => {
     const input = { greeting: "hello world" };
     const arrayOfNumbers = objectToArrayOfNumbers(input);
     assert(arrayOfNumbers.length === DATA_SIZE);
@@ -48,7 +48,7 @@ describe("encoding JS objects to arrays of numbers", () => {
     assert.deepStrictEqual(result, input);
   });
 
-  test.only("overly large object to array of numbers thrown an error", () => {
+  test.only("overly large object to byte array thrown an error", () => {
     let didThrow = false;
     const largeString =
       `"Skateboarding is the ultimate expression of freedom and creativity. It's a way of life that's all about pushing boundaries, breaking rules, and living on the edge. With every trick, every grind, every flip, we're defying gravity and redefining what's possible. Skateboarding is more than just a sport, it's a culture, a community, and a way of seeing the world. It's about taking risks, challenging yourself, and never giving up. So grab your board, hit the streets, and let's show the world what we're made of! #skatelife #90s #radical #cool #skateboardingislife`.repeat(
