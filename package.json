@@ -5,7 +5,6 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.29.0",
-    "@solana-developers/helpers": "file:../helpers",
     "@solana/compat": "^2.0.0-experimental.71dcc4e",
     "esrun": "^3.2.26"
   },
