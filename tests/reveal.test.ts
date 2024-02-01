@@ -98,7 +98,7 @@ describe("revealer", async () => {
 
   const program = anchor.workspace.Revealer as anchor.Program<Revealer>;
 
-  test("reveal instructions writes data that can be retrieved", async () => {
+  test("reveal instruction writes data that can be retrieved", async () => {
     const id: typeof BN = new BN(randomBytes(8));
 
     // Very basic implementation of Part 1
@@ -166,8 +166,6 @@ describe("revealer", async () => {
     const revelationAccount = await connection.getAccountInfo(
       revelationAddress
     );
-
-    log(`revelationAddress: ${stringify(revelationAddress)}`);
 
     const dataFromChain = revelationAccount?.data;
     if (!dataFromChain) {
